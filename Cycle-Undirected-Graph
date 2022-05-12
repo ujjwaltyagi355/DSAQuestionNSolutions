@@ -1,0 +1,109 @@
+=> See the condition where (par!=it)
+
+
+** DFS Recursive**
+class Solution{
+  public boolean helper(int node, int par,ArrayList<ArrayList<Integer>> adj, boolean[] vis){
+          vis[node]=true;
+          for(int it: adj.get(node)){
+              if(vis[it]==false){
+                  if(helper(it, node, adj, vis)) return true;;
+              }
+              else if(par!=it){
+                  return true;
+              }
+          }
+          return false;
+
+      }
+      public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean vis[]=new boolean[V];
+        for(int i=0; i<V; i++){
+            if(vis[i]==false){
+                if(helper(i,-1,adj,vis)) return true;
+            }
+        }
+        return false;
+      }
+}
+
+
+**DFS Iterative**
+
+class Solution {
+    // Function to detect cycle in an undirected graph.
+    class Node{
+        int node;
+        int par;
+        Node(int node, int par){
+            this.node=node;
+            this.par=par;
+        }
+    }
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        Stack<Node> st= new Stack<Node>();
+        boolean vis[]=new boolean[V];
+        for(int i=0; i<V; i++){
+            if(vis[i]==false){
+                st.push(new Node(i, -1));
+                while(!st.isEmpty()){
+                    Node nd=st.pop();
+                    int ele=nd.node;
+                    int pr=nd.par;
+                    vis[ele]=true;
+                    for(int it: adj.get(ele)){
+                        if(vis[it]==false){
+                            st.push(new Node(it,ele));
+                            
+                        }
+                        else if(pr!=it) return true;
+                    }
+                }
+            }
+            
+        }
+        return false;
+    }
+}
+
+
+**BFS Iterative**
+
+class Solution {
+    // Function to detect cycle in an undirected graph.
+    class Node{
+        int node;
+        int par;
+        Node(int node, int par){
+            this.node=node;
+            this.par=par;
+        }
+    }
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        Queue<Node> q= new LinkedList<Node>();
+        boolean vis[]=new boolean[V];
+        for(int i=0; i<V; i++){
+            if(vis[i]==false){
+                q.add(new Node(i, -1));
+                vis[i]=true;
+                while(!q.isEmpty()){
+                    Node nd=q.poll();
+                    int ele=nd.node;
+                    int pr=nd.par;
+                    for(int it: adj.get(ele)){
+                        if(vis[it]==false){
+                            q.add(new Node(it,ele));
+                            vis[it]=true;
+                            
+                        }
+                        else if(pr!=it) return true;
+                    }
+                }
+            }
+            
+        }
+        return false;
+    }
+}
