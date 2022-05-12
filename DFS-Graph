@@ -1,0 +1,56 @@
+https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph
+
+**Iterative**
+class Solution {
+// Function to return a list containing the DFS traversal of the graph.
+  public ArrayList<Integer> dfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+      // Code here
+      ArrayList<Integer> ans=new ArrayList<Integer>();
+      Stack<Integer> st=new Stack<>();
+      int vis[]= new int[V];
+      for(int i=0; i<V; i++){
+          if(vis[i]==0){
+              st.push(i);
+              vis[i]=1;
+              while(!st.isEmpty()){
+                  Integer node=st.pop();
+                  ans.add(node);
+                  vis[it]=1;
+                  for(Integer it: adj.get(node)){
+                      if(vis[it]==0){
+                           st.push(it);
+                      }
+
+                  }
+              }
+          }
+      }
+      return ans;
+  }
+}
+
+
+
+
+**Recursive**
+
+class Solution {
+    
+    public void helper(int node,boolean[] vis,  ArrayList<Integer> ans, ArrayList<ArrayList<Integer>> adj){
+        ans.add(node);
+        vis[node]=true;
+        for(int it: adj.get(node)){
+            if(vis[it]==false)
+            helper(it,vis,ans,adj);
+        }
+    }
+    // Function to return a list containing the DFS traversal of the graph.
+    public ArrayList<Integer> dfsOfGraph(int V, ArrayList<ArrayList<Integer>> adj) {
+        // Code here
+        ArrayList<Integer> ans=new ArrayList<>();
+        boolean vis[]=new boolean[V];
+        
+        helper(0,vis, ans, adj);
+        return ans;
+    }
+}
