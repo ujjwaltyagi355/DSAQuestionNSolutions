@@ -1,0 +1,71 @@
+=> Steps:
+    1. We traverse the graph from the 0 index.
+    2. Now we traverse the adjacent nodes of the node here and update the distance accordingly and mark it's parent with respect to this distance.
+    3. We take the minimum out of all the adjacent nodes and add it to the mst.
+    4. Repeat the step by taking out the elements from the pq.
+
+class Solution{
+    class Node implements Comparator<Node>{       
+        int v;
+        int w;
+        Pair() {};
+        Pair(int node, int weight){
+            v=node;
+            w=weight;
+        }
+        int getV(){return v;}
+        int getW{return w};
+        
+        @Override
+        public in compare(Node n1, node n2){
+            if(node1.w<node2.w) return -1;
+            else if(node1.w>node2.w) return 1;
+            else return 0;
+        }
+    }
+    
+    public static int[] primAlgoForMST(int V, ArrayList<ArrayList<Node>> adj){
+        int[] dis = new int[V];
+        int[] parent = new int[V];
+        boolean[] mst=new boolean[V];
+        for(int i=0; i<V; i++){
+            dis[i]=Integer.MAX_VALUE;
+            parent[i]=-1;
+            mst[i]=false;
+        }
+        
+        PriorityQueue<Node> pq= new PriorityQueue<Node>(V, new Node());
+        dis[0]=0;
+        pq.add(new Node(0,dis[0]));
+        while(!pq.isEmpty()){
+            Node nd=pq.poll().getV();
+            mst[nd]=true;
+            for(Node it: adj.get(nd){
+                if(mst[it.getV]==false && dis[it.getV()]>it.getW()){
+                    dis[it.getV()]=it.getW();
+                    parent[it.getV()]=nd;
+                    pq.add(new Node(it.getV(),dis[it.getV()]));
+                    
+                }
+            }
+        }
+        return dis;
+    } 
+    
+    public static void main(String args[]){
+        int n=6;
+        ArrayList<ArrayList<Pair>> adj= new ArrayList<ArrayList<pair>>();
+        for(int i=0; i<n; i++)
+            adj.add(new ArrayList<Pair>());
+            //Way to add the elements to the pair classed objects
+            adj.get(0).add(new Pair(1,2));
+            adj.get(1).add(new Pair(4,1));
+            adj.get(2).add(new Pair(3,6));
+            adj.get(3).add(new Pair(5,2));
+            .
+            .
+            .
+            .
+        
+    }
+}
