@@ -1,1 +1,97 @@
+=> Look for the condition where we check the color of node and its adjacent to be equal. (color[it]==color[node])
 
+
+**BFS CODE**
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        Queue<Integer> q= new LinkedList<>();
+        int n= graph.length;
+        int[] color= new int[n];
+        Arrays.fill(color,-1);
+        for(int i=0; i<n; i++){
+            if(color[i]==-1){
+                q.add(i);
+                color[i]=1;
+                while(!q.isEmpty()){
+                    int node=q.poll();
+                    for(int it: graph[node]){
+                        if(color[it]==-1){
+                           q.add(it);
+                            color[it]=1-color[node]; 
+                        }
+                        else if(color[it]==color[node]){
+                            return false;
+                        }
+                        
+                    }
+                }
+            }
+        }
+        
+         return true;
+    }
+}
+
+
+**DFS CODE ITERATIVE**
+
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        Stack<Integer> st= new Stack<>();
+        int n= graph.length;
+        int[] color= new int[n];
+        Arrays.fill(color,-1);
+        for(int i=0; i<n; i++){
+            if(color[i]==-1){
+                st.push(i);
+                color[i]=1;
+                while(!st.isEmpty()){
+                    int node=st.pop();
+
+                    for(int it: graph[node]){
+                        if(color[it]==-1){
+                           st.push(it);
+                            color[it]=1-color[node]; 
+                        }
+                        else if(color[it]==color[node]){
+                            return false;
+                        }
+                        
+                    }
+                }
+            }
+        }
+        
+         return true;
+    }
+}
+
+
+**DFS Recursive**
+
+class Solution {
+    public boolean helper(int node, int[][] graph, int[] color){
+            if(color[node]==-1)color[node]=1;
+            for(int it: graph[node]){
+                if(color[it]==-1){
+                    color[it]=1-color[node];
+                    if(!helper(it, graph, color)) return false;
+                }
+                else if(color[it]==color[node]) return false;
+            }
+        return true;
+    }
+    public boolean isBipartite(int[][] graph) {
+        int n= graph.length;
+        int[] color= new int[n];
+        Arrays.fill(color,-1);
+        for(int i=0; i<n; i++){
+            if(color[i]==-1){
+                if(!helper(i, graph, color)) return false;
+            }
+        }
+        
+        
+         return true;
+    }
+}
