@@ -1,0 +1,25 @@
+=> if dis[node]+1<dis[it] then we update the distance and add the "it" to the queue again.
+
+**BFS Code**
+
+class Solution{
+    public static int[] hepler(int V, int src, ArrayList<ArrayList<Integer>> adj){
+        int[] dis = new int[v];
+        Queue<Integer> q= new LinkedList<>();
+        Arrays.fill(dis, 1000000);
+        
+        q.offer(src);
+        dis[src]=0;
+        
+        while(!q.isEmpty()){
+            int node=q.poll();
+            for(int it: adj.get(node)){
+                if(dis[node]+1<dis[it]){ //Here
+                    dis[it]=dis[node]+1;
+                    q.add(it);
+                }
+            }
+        }
+        return dis;
+    } 
+}
