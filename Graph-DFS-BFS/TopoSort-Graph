@@ -1,0 +1,34 @@
+=> See we push to stack when the recusion call gets over. 
+
+**DFS**
+class Solution
+{
+    public static void helper(int node, int[] vis,Stack<Integer> st,ArrayList<ArrayList<Integer>> adj){
+        vis[node]=1;
+        for(int it: adj.get(node)){
+            if(vis[it]==0){
+                helper(it,vis,st,adj);
+            }
+        }
+        st.push(node); //Push to stack after the recusive call is over
+    }
+    //Function to return list containing vertices in Topological order. 
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) 
+    {
+        // add your code here
+        int[] ans=new int[V];
+        Stack<Integer> st=new Stack<>();
+        int[] vis=new int[V];
+        
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                helper(i,vis,st,adj);
+            }
+        }
+        int ind=0;
+        while(!st.isEmpty()){
+            ans[ind++]=st.pop();
+        }
+        return ans;
+    }
+}
