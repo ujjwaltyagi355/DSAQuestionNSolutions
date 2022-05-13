@@ -1,0 +1,33 @@
+=> See the point where we unmark in the dfsvis.
+
+
+**DFS recursive**
+class Solution {
+    // Function to detect cycle in a directed graph.
+    
+    public boolean helper(int node,ArrayList<ArrayList<Integer>> adj, int[] vis,int[] dfsvis){
+        vis[node]=1;
+        dfsvis[node]=1;
+        for(int it: adj.get(node)){
+            if(vis[it]==0){
+                if(helper(it,adj,vis,dfsvis)) return true;
+            }
+            
+            else if(dfsvis[it]==1) return true;
+        }
+        dfsvis[node]=0; ///dfsvis stores the current recusion stack, i.e the part which is being traversed now, so when recusion call gets over we mark it as 0.
+        return false;
+    }
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        // code here
+        int[] vis=new int[V];
+        int[] dfsvis=new int[V];
+        
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                if(helper(i, adj, vis, dfsvis)) return true;
+            }
+        }
+        return false;
+    }
+}
