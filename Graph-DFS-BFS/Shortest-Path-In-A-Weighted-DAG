@@ -1,0 +1,72 @@
+=> Steps:
+  1. calculate the toposort to get the linear ordering of the vertices.
+  2. Take out the elements from the stack one by one and update the distance.
+  
+** Topo + DFS Code** 
+
+class Solution{
+    class Pair{
+        int node;
+        int weight;
+        Pair(int node, int weight){
+            this.node=node;
+            this.weight=weight;
+        }
+        int getV(){return node};
+        int getWeight(){return weight};
+    }
+    
+    public static void topoSort(int node, int[] vis, Stack<Integer> st, ArrayList<ArrayList<Pair>> adj){
+        vis[node]=1;
+        for(Pair it: adj.get(node)){
+            if(vis[it.getV()]==0){
+                topoSort(it.getV(),vis,st,adj);
+            }
+        }
+        st.push(node);
+    }
+    public static int[] shortestPathInDAG(int V, int src, ArrayList<ArrayList<Pair>> adj){
+        int[] dis = new int[V];
+        int[] vis = new int[V];
+        Stack<Integer> st= new Stack<>();
+        Arrays.fill(dis,Integer.MAX_VALUE);
+        
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                topoSort(i,vis,st,adj);
+            }
+        }
+        for(int i=0; i<V; i++){        
+                dis[src]=0;
+                while(!st.isEmpty()){
+                    int node=st.pop();
+                    if(dis[node]!=Integer.MAX_VALUE){
+                        for(Pair it: adj.get(it)){
+                            if(dis[it.getV()]>dis[node]+it.getWeight()){
+                                dis[it.getV()]=dis[node]+it.getWeight();
+                            }
+                        }
+                    }
+                }
+            }
+        return dis;
+        
+    } 
+    
+    public static void main(String args[]){
+        int n=6;
+        ArrayList<ArrayList<Pair>> adj= new ArrayList<ArrayList<pair>>();
+        for(int i=0; i<n; i++)
+            adj.add(new ArrayList<Pair>());
+            //Way to add the elements to the pair classed objects
+            adj.get(0).add(new Pair(1,2));
+            adj.get(1).add(new Pair(4,1));
+            adj.get(2).add(new Pair(3,6));
+            adj.get(3).add(new Pair(5,2));
+            .
+            .
+            .
+            .
+        
+    }
+}
