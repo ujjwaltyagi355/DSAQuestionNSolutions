@@ -1,0 +1,33 @@
+//This algo can be used to find out negative cycle as well as distance of nodes from the src in a graph where nodes have a negative weight;
+//Steps:
+  1. Do relaxation of each node (n-1) times.
+        dis[u]+weight<dis[v] => dis[v]=dis[u]+weight;
+  2. if we are able to do relaxation nth time and the dis decrese still, then there is a negative cycle.
+
+class Solution
+{
+    public int isNegativeWeightCycle(int n, int[][] edges)
+    {   
+        int[] dis=new int[n];
+        Arrays.fill(dis,100000);
+        //code here
+        dis[0]=0;
+        for(int i=0; i<n-1; i++){
+            for(int[] row: edges){
+                if(dis[row[0]]+ row[2]<dis[row[1]]){ //Relaxation formula
+                dis[row[1]]=dis[row[0]]+row[2];
+            }
+            }
+        }
+        int flag=0;
+        for(int[] row: edges){
+                if(dis[row[0]]+ row[2]<dis[row[1]]){ //nth time the relaxation possible
+                dis[row[1]]=dis[row[0]]+ row[2];
+                flag=1; //a cycle exist.
+            }
+        }
+        return flag;
+        
+        
+    }
+}
