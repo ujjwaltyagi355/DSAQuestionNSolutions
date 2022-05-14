@@ -1,0 +1,48 @@
+class Solution
+{   
+    public void helper(int node, int parent,ArrayList<ArrayList<Integer>> adj, int[] arti,int[] time, int[] low,int[] vis, int timer){
+        vis[node]=1;
+        time[node]=low[node]=timer++;
+        int child=0;
+        for(int it: adj.get(node)){
+            if(it==parent) continue;
+            if(vis[it]==0){
+                helper(it,node,adj,arti,time,low,vis,timer);
+                low[node]=Math.min(low[node],low[it]);
+                if(low[it]>=time[node] && parent!=-1){
+                    arti[node]=1;
+                } 
+                child++;
+            }
+            else{
+                low[node]=Math.min(low[node],time[it]);
+            }
+        }
+        if(parent==-1 && child>1){
+            arti[node]=1;
+        }
+    }
+    //Function to return Breadth First Traversal of given graph.
+    public ArrayList<Integer> articulationPoints(int V,ArrayList<ArrayList<Integer>> adj)
+    {
+        // Code here
+        int[] time=new int[V];
+        int[] low= new int[V];
+        int[] vis= new int[V];
+        int[] arti=new int[V];
+        ArrayList<Integer> ans=new ArrayList<Integer>();
+        
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                helper(i,-1, adj,arti,time,low,vis,0);
+            }
+        }
+        for(int i=0; i<V; i++){
+            if(arti[i]==1){
+                ans.add(i);
+            }
+        }
+        if(ans.isEmpty()) ans.add(-1);
+        return ans;
+    }
+}
