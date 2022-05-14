@@ -1,0 +1,61 @@
+//Steps=>
+    //1. Do toposort to get the linear ordering of the vertices accoding to the finishing time.
+    //2. Do transpose of the graph.
+    //3. Now do dfs on the nodes based on the pop from the stack from the toposort.
+
+class Solution
+{
+    public void topo(int node, ArrayList<ArrayList<Integer>> adj, Stack<Integer> st, int[] vis){
+        vis[node]=1;
+        for(int it: adj.get(node)){
+            if(vis[it]==0){
+                topo(it,adj,st,vis);
+            }
+        }
+        st.push(node);
+    }
+    
+    public void helper(int node, int[] vis, ArrayList<ArrayList<Integer>> adj){
+        vis[node]=1;
+        for(int it: adj.get(node)){
+            if(vis[it]==0){
+                helper(it,vis,adj);
+            }
+        }
+    }    
+    //Function to find number of strongly connected components in the graph.
+    public int kosaraju(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        //code here
+        
+        int[] vis=new int[V];
+        Stack<Integer> st= new Stack<Integer>();
+        
+        //Getting the toposort of the graph
+        for(int i=0; i<V; i++){
+            if(vis[i]==0){
+                topo(i, adj,st,vis);
+            }
+        }
+        //Getting the transpose of the graph
+        ArrayList<ArrayList<Integer>> tranAdj= new ArrayList<>();
+        for(int i=0; i<V; i++)
+            tranAdj.add(new ArrayList<Integer>());
+        for(int i=0; i<V; i++){
+            vis[i]=0;
+            for(int it: adj.get(i)){
+                tranAdj.get(it).add(i);
+            }
+        }
+        //Counting the number of components
+        int count=0;
+        while(!st.isEmpty()){
+            int node=st.pop();
+            if(vis[node]==0){
+                count++;
+                helper(node, vis, tranAdj); //Note: here we passed the "tranAdj"
+            }
+        }
+        return count;
+    }
+}
