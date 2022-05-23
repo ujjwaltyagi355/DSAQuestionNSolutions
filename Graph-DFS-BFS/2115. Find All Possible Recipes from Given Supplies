@@ -1,0 +1,70 @@
+Link:  https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/
+
+Method: Use Topo Sort
+
+class Solution {
+    public List<String> findAllRecipes(String[] recipes, List<List<String>> ingredients, String[] supplies) {
+        
+        // First insert all the supplies
+        // Now create a map of all the recepies that are not in the supplies but need to made and require specific ingrdients
+        //Add all the recepies with zero  indegree ie no dependency to the queue and apply topo sort.
+        
+        HashSet<String> sup= new HashSet<>();
+        HashMap<String, Integer> index= new HashMap<>();
+        HashMap<String,List<String>> map= new HashMap<>();
+        
+        //Adding all the supplies already present, this would help us avoid addition of these to the toposort as they are already available and we don't require them.
+        for(String it: supplies){
+            sup.add(it);
+        }
+        
+        //Adding the index of all the receipies this will help us keep the track of the indegree of all the recepies later
+        for(int i=0; i<recipes.length; i++){
+            index.put(recipes[i],i);
+        }
+        
+        int[] indegree = new int[recipes.length];
+        
+        //Adding the recipes to the map and increasing the indegree here.
+        for(int i=0; i<recipes.length; i++){
+            //The ingredients needed for a particular recipe
+            for(String need: ingredients.get(i)){
+                //if the given required ingredient is in the supplies then we need not add it as it won't be cooked
+                if(sup.contains(need)){
+                    continue;
+                }
+                
+                map.putIfAbsent(need, new ArrayList<String>());
+                map.get(need).add(recipes[i]);
+                indegree[i]++;
+            }
+        }
+        
+        //Now we will be adding the index of all the recepies whoes indegree is zero i.e. they do not have any dependency
+        Queue<Integer> q= new LinkedList<Integer>();
+        
+        for(int i=0; i<recipes.length; i++){
+            if(indegree[i]==0){
+                q.add(i);
+            }
+        }
+        List<String> cooked = new ArrayList<String>();
+        
+        while(!q.isEmpty()){
+            int ind= q.poll();
+            cooked.add(recipes[ind]);
+            //If map does not contain this recipe means this is not reqried for any other dish, so no extra processing is required here.
+            if(!map.containsKey(recipes[ind])){
+                continue;
+            }
+            
+            for(String it: map.get(recipes[ind])){
+                if(--indegree[index.get(it)] == 0) { //This is where the index array was used.
+                    q.add(index.get(it));
+            }
+        }
+        
+    }
+        return cooked;
+    }
+}
