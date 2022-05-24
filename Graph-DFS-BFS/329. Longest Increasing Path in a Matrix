@@ -1,0 +1,50 @@
+**DFS+DP***
+
+
+class Solution {
+    
+    private int dirs[][]={{0,1},{0,-1},{1,0},{-1,0}};
+    public int longestIncreasingPath(int[][] matrix) {
+        if(matrix==null) return 0;
+        int n= matrix.length;
+        if(n==0) return 0;
+        int m= matrix[0].length;
+        if(m==0) return 0;
+        
+        int[][] dp= new int[n][m];
+        for(int[] row: dp){
+            Arrays.fill(row,0);
+        }
+        int maxLength=1;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                int currentmax=dfs(i,j,n,m,matrix,dp);
+                maxLength=Math.max(maxLength,currentmax);
+            }
+        }
+        
+        return maxLength;
+        
+    }
+    
+    private int dfs(int row, int col, int n, int m,int[][] matrix, int[][] dp){
+        if(dp[row][col]!=0) return dp[row][col];
+        int currentLen=1;
+        for(int dir[]: dirs){
+            int nextX=row+dir[0];
+            int nextY=col+dir[1];
+            
+            if(nextX<0 || nextY<0 || nextX>=n || nextY>=m) {
+                continue;
+            }
+            
+            if(matrix[row][col]>=matrix[nextX][nextY]){
+                continue;
+            }
+            
+            currentLen=Math.max(currentLen,1+dfs(nextX,nextY,n,m,matrix,dp));
+        }
+        dp[row][col]=currentLen;
+        return currentLen;
+    }
+}
