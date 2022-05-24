@@ -1,5 +1,7 @@
 **DFS+DP***
 
+T(n): O(n*m)
+S(n): O(n*m)
 
 class Solution {
     
