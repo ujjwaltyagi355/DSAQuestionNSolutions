@@ -1,0 +1,127 @@
+Link: https://leetcode.com/problems/swim-in-rising-water/
+
+***Dijkastra's Algorithm***
+
+
+//T(n): n2logn (n2 for the grid and logn for the priority queue used)
+
+class Solution {
+    //Creating a node element to store the coordinates x and y and the water level i.e the time elapsed they require.
+    class Node{
+        int x;
+        int y;
+        int timeelapsed;
+        
+        Node(int _x, int _y, int _timeelapsed){
+            x=_x;
+            y=_y;
+            timeelapsed=_timeelapsed;
+        }
+    }
+    
+    public static int[][] dirs= {{-1,0},{0,1},{1,0},{0,-1}};
+    public int swimInWater(int[][] grid) {
+        int leasttime=0;
+        int n=grid.length;
+        //Priority queue to get the element with the minimum timeelapsed
+        PriorityQueue<Node> pq= new PriorityQueue<Node>((a,b)->a.timeelapsed-b.timeelapsed);
+        boolean[][] vis= new boolean[n][n];
+        pq.add(new Node(0,0,grid[0][0]));
+        vis[0][0]=true;
+        
+        while(!pq.isEmpty()){
+            //pop the element with the least time
+            Node ele= pq.poll();
+            leasttime=Math.max(ele.timeelapsed, leasttime);
+            if(ele.x==n-1 && ele.y==n-1) break;
+            
+            for(int dir[]: dirs){
+                int nextx=ele.x+dir[0];
+                int nexty=ele.y+dir[1];
+                if(nextx<0 || nextx>=n || nexty<0 || nexty>=n || vis[nextx][nexty]) continue;
+                vis[nextx][nexty]=true;
+                pq.add(new Node(nextx, nexty, grid[nextx][nexty]));
+            }
+        }
+        return leasttime;
+    }
+}
+
+
+**DSU METHOD**(Not Recommended but please see!!)
+T(n): O(n2logn)
+
+Steps:
+1. Add positions of all the points in an array and sort it based on the values in the grid.
+2. Start taking out the elements from the array and union them until we reach the point where the parent of both start and end becomes same i.e. they are connected.
+
+
+class DSU {
+    int parent[];
+    int height[];
+ 
+    public DSU(int n) {
+        parent = new int[n];
+        height = new int[n];
+        Arrays.fill(parent , -1);
+        Arrays.fill(height , 1);
+    }
+    
+    //Path compression
+    public int findRoot(int node) {
+        if(parent[node] == -1) 
+            return node;
+        return parent[node] = findRoot(parent[node]);
+    }
+    
+    //Applying the union
+    public boolean union(int node1 , int node2) {
+        int ra = findRoot(node1);
+        int rb = findRoot(node2);
+        if(ra != rb) {
+            if(height[ra] < height[rb])
+                parent[ra] = rb;
+            else if(height[ra] > height[rb])
+                parent[rb] = ra;
+            else {
+                parent[ra] = rb;
+                height[rb] ++;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+ 
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int n = grid.length;
+        DSU dsu = new DSU(n * n);
+        List<Integer> positions = new ArrayList<>();
+        for(int i = 0 ; i < n ; i ++)
+            for(int j = 0 ; j < n ; j ++)
+                positions.add(i * n + j); //Stroing as a 1D array
+        Collections.sort(positions , (a , b) -> grid[a / n][a % n] - grid[b / n][b % n]); //soting the postions on the basis of the grid value
+        int dir[][] = new int[][]{{0 , 1} , {0 , -1} , {-1 , 0} , {1 , 0}};
+ 
+        for(int position : positions) //Taking out the sorted positions
+        {
+            int r = position / n;
+            int c = position % n;
+ 
+            for(int i = 0 ; i < dir.length ; i ++)
+            {
+                int nr = r + dir[i][0];
+                int nc = c + dir[i][1];
+ 
+                if(nr >= 0 && nc >= 0 && nr < n && nc < n && grid[nr][nc] < grid[r][c])
+                    dsu.union(position , nr * n + nc);
+            }
+ 
+            if(dsu.findRoot(0) == dsu.findRoot((n * n) - 1)) // Check if we have connected the cells
+                return grid[r][c];
+        }
+ 
+        return -1;
+    }
+}
