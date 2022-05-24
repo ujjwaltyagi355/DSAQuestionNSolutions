@@ -1,0 +1,119 @@
+**DFS**
+
+T(n): O(n*m)
+
+Here, were are trying to calculate the boundary of black pixels by recuring in all the directions.
+
+class Solution {
+    public int minArea(char[][] image, int x, int y) {
+        int rows= image.length;
+        int cols=image[0].length;
+        
+        if(rows==0||cols==0) return 0;
+        
+        int[] cor=new int[4];
+        
+        cor[0]=rows-1; //Upper bound
+        cor[1]=0; //lower bound
+        cor[2]=cols-1; //left bound
+        cor[3]=0; //right bound
+        
+        dfs(cor, image, x, y);
+        
+        return (cor[1]-cor[0]+1)*(cor[3]-cor[2]+1);
+        
+    }
+    
+    private void dfs(int[] cor, char[][] image, int x, int y){
+        int n=image.length;
+        int m=image[0].length;
+        
+        if(x<0 || y<0 || x>=n || y>=m) return;
+        if(image[x][y]=='0') return;
+        
+        //If we reached this point that means we have a 1 here, we will mark it as 0 to show as visited
+        image[x][y]='0';
+        
+        //Now we will update the coordinates of the area thus far
+        
+        cor[0]=Math.min(cor[0],x); //upper bound
+        cor[1]=Math.max(cor[1],x); //lower bound
+        cor[2]=Math.min(cor[2],y); //left bound
+        cor[3]=Math.max(cor[3],y); //right bound
+        
+        //Now recur in all four directions of x,y
+        dfs(cor, image, x+1,y);
+        dfs(cor,image,x,y+1);
+        dfs(cor,image,x-1,y);
+        dfs(cor,image,x,y-1);
+        
+        
+    }
+}
+
+
+**Binary Search**
+
+T(n): O(n*logn + m*logm)
+
+//Steps:
+//1. Calculate the left, right, up, bottom of the last present 1.
+//2. hasBlack returns true if there exist a 1 in a column(if horizontal true) and 1 if there exists a 1 in row(if horizontal is false)
+class Solution {
+    public int minArea(char[][] image, int x, int y) {
+        
+        if(image==null) return 0;
+        
+        int left=leftmost(0,y,image,true); //Apply Binary Search to find the leftmost column in which 1 exist
+        int right=rightmost(y,image[0].length-1,image,true); //Apply Binary Search to find the rightmost column in which 1 exist
+        int top=leftmost(0,x,image,false);//Apply Binary Search to find the topmost row in which 1 exist
+        int bottom=rightmost(x,image.length-1,image,false);//Apply Binary Search to find the bottommost row in which 1 exist
+        
+        return (right-left+1)*(bottom-top+1);
+        
+    }
+    
+    int leftmost(int min, int max, char[][] image, boolean horizontalMove){
+        int l=min, r=max;
+        while(l<r){
+            int mid=l+(r-l)/2; 
+            if(!hasBlack(image, mid, horizontalMove)){
+                l=mid+1;
+            }
+            else{
+                r=mid;
+            }
+        }
+        return l;
+    }
+    
+    int rightmost(int min, int max, char[][] image, boolean horizontalMove){
+        int l=min,r=max;
+        while(l<r){
+            int mid=l+(r-l+1)/2; //Note: this is necessary because of the last row issues
+            
+            if(!hasBlack(image,mid,horizontalMove)){
+                r=mid-1;
+            }
+            else{
+                l=mid;
+                }
+        }
+        return r;
+    }
+    
+    boolean hasBlack(char[][] image, int mid, boolean horizontalMove){
+        if(horizontalMove){
+            for(int i=0; i<image.length;i++){
+                if(image[i][mid]=='1') return true; //finding if 1 exists in the column given we return true
+            }
+        }
+        else{
+            for(int i=0; i<image[0].length;i++){
+                if(image[mid][i]=='1') return true; //finding if 1 exists in the row given we return true
+            }
+            
+        }
+        return false;
+    }
+}
