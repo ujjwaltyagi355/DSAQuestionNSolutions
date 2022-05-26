@@ -1,0 +1,41 @@
+link: https://leetcode.com/problems/path-with-minimum-effort/
+
+**Dijkstra's Algo**
+
+T(n): O(ElogE)
+
+class Solution {
+    
+    public static int[][] dirs= {{-1,0},{0,1},{1,0},{0,-1}};
+    public int minimumEffortPath(int[][] heights) {
+        PriorityQueue<int[]> pq= new PriorityQueue<>((a, b) -> Integer.compare(a[2], b[2]));
+        
+        int rows=heights.length;
+        int cols=heights[0].length;
+        Integer[][] minDist= new Integer[rows][cols];
+        
+        pq.add(new int[]{0,0,0}); //(row,col,minDif)
+        minDist[0][0]=0;
+        while(!pq.isEmpty()){
+            int node[]=pq.poll();
+            int cr=node[0];
+            int cc=node[1];
+            int dis=node[2];
+            if(cr==rows-1 && cc==cols-1) return dis;
+            for(int[] dir: dirs){
+                int nr=cr+dir[0];
+                int nc=cc+dir[1];
+                
+                if(nr<0 || nc<0 || nr>=rows || nc>=cols) continue;
+                
+                int effort=Math.max(dis,Math.abs(heights[nr][nc]-heights[cr][cc]));
+                
+                if(minDist[nr][nc]==null || minDist[nr][nc]>effort){
+                    minDist[nr][nc]=effort;
+                    pq.add(new int[]{nr,nc,effort});
+                }
+            }
+        }
+        return -1;
+     }
+}
