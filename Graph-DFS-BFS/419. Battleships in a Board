@@ -1,0 +1,31 @@
+link: https://leetcode.com/problems/battleships-in-a-board/
+
+T(n): O(rows*cols)
+
+//Steps:
+//1. We traverse the whole grid as it is.
+//2. No when we move and we find a battleship i.e. 'X' We check the following:
+    //2.1: if i==0 i.e. it is the first row so no ship would be above it i.e. adjacent to it.
+    //2.2: if i!=0 then board[i-1][j]=='.' that means there is empty water on the left so the ship can be place.
+    //2.3: if j==0 i.e. it is the first column i.e. no ship would be above it
+    //2.4: if j!=0 then board[i][j-1]=='.' that means the above cell is empty so we can place the ship here.
+//3. Hence, we are looking for cells with no adjacents ships.
+
+class Solution {
+    public int countBattleships(char[][] board) {
+        int rows=board.length;
+        int cols=board[0].length;
+        
+        int count=0;
+        if(board==null) return 0;
+        
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<cols; j++){
+                if(board[i][j]=='X' && (i==0 || board[i-1][j]=='.') && (j==0 || board[i][j-1]=='.')){
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
