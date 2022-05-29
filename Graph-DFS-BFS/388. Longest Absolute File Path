@@ -1,0 +1,25 @@
+Link: https://leetcode.com/problems/longest-absolute-file-path/
+
+T(n): O(n)
+
+class Solution {
+    public int lengthLongestPath(String input) {
+        int maxLen=0;
+        Stack<Integer> st= new Stack<Integer>();
+        st.push(0); //Insert a dummy length of 0
+        for(String s: input.split("\n")){
+            //lev gives the number of tabs which is inturn the level of the directory
+            int lev= s.lastIndexOf("\t")+1; //we do +1 for the parent directory as the fn will return -1 as no \t in parent directory
+            //Find the parent of the current directory or file
+            while(lev+1<st.size()) st.pop();
+            //curLen=len of the parent + current string len - lev(number of tabs) + 1(for the extra '/' at the end)
+            int curLen=st.peek()+s.length()-lev+1;
+            st.push(curLen); //push it to the stack
+            //if contains a '.' then it a file and we need to remove the extra '/' we added and update maxlen
+            if(s.contains(".")) maxLen=Math.max(maxLen,curLen-1);
+            
+        }
+        return maxLen;
+        
+    }
+}
