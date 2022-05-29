@@ -1,0 +1,28 @@
+Link: https://leetcode.com/problems/time-needed-to-inform-all-employees/
+
+T(n): O(N)
+
+class Solution {
+    public int numOfMinutes(int n, int headId, int[] manager, int[] informTime) {
+    Map<Integer, List<Integer>> map = new HashMap<>();//[ manager : [List of Employees under him] ]
+    Queue<int[]> q = new LinkedList<>();
+    int res = 0;
+
+    for(int i = 0; i < manager.length; i++)
+        map.computeIfAbsent(manager[i], v -> new ArrayList<>()).add(i);
+
+    q.add(new int[]{ headId, informTime[headId] });//{ managerId, manager's Inform Time }
+
+    while(!q.isEmpty()){
+        int curr[] = q.poll();
+
+        if(!map.containsKey(curr[0])) continue;//If manager doesn't have employees under him
+
+        for(int e : map.get(curr[0])){
+            q.add(new int[]{ e, curr[1] + informTime[e] });
+            res = Math.max(res, curr[1] + informTime[e]);
+        }
+    }
+    return res;
+}
+}
