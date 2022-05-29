@@ -1,0 +1,157 @@
+Link: https://leetcode.com/problems/similar-string-groups/
+
+**BFS**
+
+T(N): O(n^2 * W) -> n is the size of array A and W is the length of the words.
+
+class Solution {
+    public boolean isSimilar(String str1, String str2){
+        int res=0;
+        for(int i=0; i<str1.length();i++){
+            if((str1.charAt(i)!=str2.charAt(i)) && ++res>2){
+                return false;
+            }
+        }
+        return true;
+    }
+    public int numSimilarGroups(String[] A) {
+        int ans=0;
+        if(A.length<2) return 1;
+        
+        Queue<String> q= new LinkedList<>();
+        boolean vis[]=new boolean[A.length];
+        
+        for(int i=0; i<A.length; i++){
+            if(vis[i]==true) continue;
+            vis[i]=true;
+            ans++; //this increments only when any element remains which does not follow the condtion remains.
+            q.add(A[i]);
+            
+            while(!q.isEmpty()){
+                String node=q.poll();
+                for(int j=0; j<A.length; j++){
+                    if(vis[j]==true) continue;
+                    
+                    if(isSimilar(node,A[j])){ //Checking for the questions condition.
+                        q.add(A[j]);
+                        vis[j]=true;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+
+**DFS**
+
+T(N): O(n^2 * W) -> n is the size of array A and W is the length of the words.
+
+class Solution {
+    public boolean isSimilar(String str1, String str2){
+        int res=0;
+        for(int i=0; i<str1.length();i++){
+            if((str1.charAt(i)!=str2.charAt(i)) && ++res>2){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int numSimilarGroups(String[] A) {
+        int n = A.length;
+        int[] vis= new int[n];
+        
+        int ans=0;
+        
+        for(int i=0; i<n ; i++){
+            if(vis[i]==1) continue;
+            vis[i]=1;
+            ans++;
+            helper(A,vis,A[i]);
+        }
+        return ans;
+    }
+    
+    public void helper(String[] A, int[] vis, String str){
+        for(int j=0; j<A.length; j++){
+            if(vis[j]==1) continue;
+
+            if(isSimilar(str, A[j])){
+                vis[j]=1;
+                helper(A,vis,A[j]);
+            }
+        }
+    }
+}
+
+**Union Find**
+
+=> Look at the union of the dsu we have made a change. 
+
+class Solution {
+    public boolean isSimilar(String str1, String str2){
+        int res=0;
+        for(int i=0; i<str1.length();i++){
+            if((str1.charAt(i)!=str2.charAt(i)) && ++res>2){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int numSimilarGroups(String[] A) {
+        
+        int n=A.length;
+        int ans=n;
+        UF u= new UF(n);
+        for(int i=0; i<n;i++){
+            for(int j=i+1; j<n;j++){
+                if(isSimilar(A[i],A[j])&& u.union(i,j)){ //if the elements are already union we return false and the count doesnot decrese in that case(See the implementation of union)
+                    ans--;
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+class UF{
+    int[] parent,rank;
+    
+    UF(int n){
+        parent= new int[n];
+        for(int i=0;i<n; i++){
+            parent[i]=i;
+        }
+        rank=new int[n];
+    }
+    
+    int find(int n){
+        if(parent[n]!=n){
+            parent[n]=find(parent[n]);
+        }
+        return parent[n];
+    }
+    public boolean union(int x, int y) {
+        int fx = find(x);
+        int fy = find(y);
+        
+        if (fx == fy) {
+            return false;
+        }
+        
+        if (rank[fx] == rank[fy]) {
+            parent[fy] = fx;
+            rank[fx]++;
+        } else if (rank[fx] > rank[fy]) {
+            parent[fy] = fx;
+        } else {
+            parent[fx] = fy;
+        }
+        
+        return true;
+    }
+    
+}
