@@ -1,0 +1,50 @@
+T(n): O(N+M)
+
+
+//Here we are assuming that the two nodes will always be inbetween so we look for something like nv-v-w-nw, where nv is the neighbour of v and nw is the neighbour of w, so what we have rigth now is two max values of the neighbours of each of the nodes and this will make up the largest sequence of the 4 nodes.
+class Solution {
+    public int maximumScore(int[] scores, int[][] edges) {
+        //A structure to store the top 3 values for each of the elements
+        int n=scores.length;
+        int[][] top3= new int[n][3];
+        
+        for(int[] arr: top3) Arrays.fill(arr,-1);
+        
+        for(int[] edge: edges){
+            int v=edge[0],w=edge[1];
+            helper(top3[v],scores, w);
+            helper(top3[w],scores,v);
+        }
+        int ans=-1;
+        for(int[] edge: edges){
+            int v= edge[0], u=edge[1], scoreVW=scores[v]+scores[u];
+            for(int nv: top3[v]){
+                if(nv==-1) break;
+                if(nv==u) continue;
+                for(int nw: top3[u]){
+                    if(nw==-1) break;
+                    if(nw==v || nw==nv) continue;
+                    ans=Math.max(ans, scoreVW+scores[nv]+scores[nw]);
+                }
+            }
+            
+        }
+    
+    return ans;
+}
+    
+    public void helper(int[] arr, int[] s, int node){
+        if(arr[0]==-1 || s[node]>s[arr[0]]){
+            arr[2]=arr[1]; arr[1]=arr[0]; arr[0]=node;
+        }
+        else if(arr[1]==-1 || s[node]>s[arr[1]]){
+            arr[2]=arr[1];
+            arr[1]=node;
+        }
+        else if(arr[2]==-1 || s[node]>s[arr[2]]){
+            arr[2]=node;
+        }
+            
+        }
+    
+}
