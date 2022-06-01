@@ -1,0 +1,146 @@
+Link: https://leetcode.com/problems/shortest-distance-from-all-buildings/
+
+**BFS**
+
+T(n): O(N*M*k) K is the number of 1's
+
+class Solution {
+    public int shortestDistance(int[][] grid) {
+        int row=grid.length;
+        int col=grid[0].length;
+        
+        int distance[][]=new int[row][col]; //To store the distance
+        int reaches[][]=new int[row][col]; //To store the number of building reached should be equal to the total number of buildings for a valid answer.
+        
+        int totalbuildings=0; //To count the total number of buildings.
+        for(int i=0; i<row; i++){
+            for(int j=0; j<col; j++){
+                if(grid[i][j]==1){ //We will bfs from all the 1's i.e. the buildings
+                    bfsHelper(grid,i,j,row,col,distance,reaches);
+                    totalbuildings++; //Adding to the total number of buildings.
+                }
+            }
+        }
+        
+        int minDis=Integer.MAX_VALUE;
+        for(int i=0; i<row;i++){
+            for(int j=0; j<col; j++){
+                if(grid[i][j]==0 && reaches[i][j]==totalbuildings){ //A valid point should be 0 and it should reach all the buildings.
+                    minDis=Math.min(minDis, distance[i][j]);
+                }
+            }
+        }
+        return minDis==Integer.MAX_VALUE?-1:minDis;
+    }
+    
+    void bfsHelper(int[][] grid, int curRow, int curCol, int rows, int cols, int[][] distance, int[][] reaches)     {
+        Queue<int[]> q= new LinkedList<>();
+        int[][] visited= new int[rows][cols];
+        int[][] dirs= {{-1,0},{0,1},{1,0},{0,-1}};
+        q.add(new int[]{curRow, curCol});
+        visited[curRow][curCol]=1;
+        int level=0;
+        while(!q.isEmpty()){
+            int size=q.size();
+            level++; //Level order traversal here.
+            while(size-- >0){
+                int[] pos= q.poll();
+                
+                for(int[] dir: dirs){
+                    int newr=pos[0]+dir[0];
+                    int newc=pos[1]+dir[1];
+                    
+                    if(!isValid(newr,newc,rows,cols,visited,grid)) continue;
+                    
+                    visited[newr][newc]=1;
+                    distance[newr][newc]+=level; //Adding the distance to the node
+                    reaches[newr][newc]++; //increasing the reach
+                    q.add(new int[]{newr,newc});
+                    
+                }
+            }
+        }
+    }
+    
+    boolean isValid(int curRow, int curCol, int rows, int cols, int[][] visited, int[][] grid){
+        return curRow>=0 && curCol>=0 && curRow<rows && curCol<cols && grid[curRow][curCol]==0 && visited[curRow][curCol]==0;
+    }
+}
+
+**Improved BFS**
+class Solution {
+    public int shortestDistance(int[][] grid) {
+        int row=grid.length;
+        int col=grid[0].length;
+        
+        int distance[][]=new int[row][col]; //To store the distance
+        int reaches[][]=new int[row][col]; //To store the number of building reached should be equal to the total number of buildings for a valid answer.
+        
+        int totalbuildings=0; //To count the total number of buildings.
+        
+        for(int i=0; i<row; i++){
+            for(int j=0; j<col; j++){
+                if(grid[i][j]==1) totalbuildings++;
+            }
+        }
+        for(int i=0; i<row; i++){
+            for(int j=0; j<col; j++){
+                if(grid[i][j]==1){ //We will bfs from all the 1's i.e. the buildings
+                    if(!bfsHelper(grid,i,j,row,col,distance,reaches,totalbuildings)){ //if we find a node where we wont be able to complete the bfs we return -1, this saves us unnecessay calculations.
+                        return -1;
+                    }              
+                }
+            }
+        }
+        
+        int minDis=Integer.MAX_VALUE;
+        for(int i=0; i<row;i++){
+            for(int j=0; j<col; j++){
+                if(grid[i][j]==0 && reaches[i][j]==totalbuildings){ //A valid point should be 0 and it should reach all the buildings.
+                    minDis=Math.min(minDis, distance[i][j]);
+                }
+            }
+        }
+        return minDis==Integer.MAX_VALUE?-1:minDis;
+    }
+    
+     boolean bfsHelper(int[][] grid, int curRow, int curCol, int rows, int cols, int[][] distance, int[][] reaches, int totalbuildings)     {
+        Queue<int[]> q= new LinkedList<>();
+        int[][] visited= new int[rows][cols];
+        int[][] dirs= {{-1,0},{0,1},{1,0},{0,-1}};
+        q.add(new int[]{curRow, curCol});
+        int level=0;
+         int count=0;
+        while(!q.isEmpty()){
+            int size=q.size();
+            level++; //Level order traversal here.
+            while(size-- >0){
+                int[] pos= q.poll();
+                
+                for(int[] dir: dirs){
+                    int newr=pos[0]+dir[0];
+                    int newc=pos[1]+dir[1];
+                    
+                    if(isValid(newr,newc,rows,cols,visited,grid)){
+                    if(grid[newr][newc]==0){
+                        visited[newr][newc]=1;
+                    distance[newr][newc]+=level; //Adding the distance to the node
+                    reaches[newr][newc]++; //increasing the reach
+                    q.add(new int[]{newr,newc});
+                    }
+                    else if(grid[newr][newc]==1){
+                        visited[newr][newc]=1;
+                        count++;
+                    }
+                    }
+                    
+                }
+            }
+        }
+         return count==totalbuildings;
+    }
+    
+    boolean isValid(int curRow, int curCol, int rows, int cols, int[][] visited, int[][] grid){
+        return curRow>=0 && curCol>=0 && curRow<rows && curCol<cols && visited[curRow][curCol]==0;
+    }
+}
