@@ -1,0 +1,74 @@
+Link: https://leetcode.com/problems/sequence-reconstruction/
+
+** Look for all the edge cases**
+
+T(n): O(V+E)
+
+class Solution {
+    public boolean sequenceReconstruction(int[] nums, List<List<Integer>> sequences) {
+        //Check if the sequence is not empty
+        if(sequences.size()==0){
+            return nums.length==0;
+        }
+        int n=nums.length;
+        int[] indegree= new int[n+1]; //we will be considering 1'based indexing here.
+        
+        List<List<Integer>> adj= new ArrayList<>();
+        for(int i=0; i<n+1; i++){
+            adj.add(new ArrayList<>());
+        }
+        //Creating the graph here
+        for(List<Integer> seq: sequences){
+            for(int i=0; i+1<seq.size(); i++){
+                int src=seq.get(i);
+                int des=seq.get(i+1);
+                if(src<=0 || src>n) return false;
+                if(des<=0 || des>n) return false;
+                
+                adj.get(src).add(des);
+                indegree[des]+=1;
+            }
+        }
+        
+        //To check if all the correct nodes are present in the sequences.
+        Set<Integer> seqNodes= new HashSet<>();
+        for(List<Integer> seq: sequences){
+            for(int i=0; i<seq.size(); i++){
+                seqNodes.add(seq.get(i));
+            }
+        }
+        for(int i=1; i<=n; i++){
+            if(!seqNodes.contains(i)){
+                return false;
+            }
+        }
+        
+        //Check is the size is same for both of them
+        if(seqNodes.size()!=nums.length) return false;
+        
+        Queue<Integer> q= new LinkedList<>();
+        //Adding all the 0 indegree nodes to the queue
+        for(int i=1; i<=n; i++){
+            if(indegree[i]==0){
+                q.offer(i);
+            }
+        }
+        
+        int nodeVisited=0;//This is taken to check if the sequence of the org[] is followed while traversing
+        while(!q.isEmpty()){
+            if(q.size()!=1) return false; //for a uniqiue and sole sequence there need to be just one node in the queue
+            int node=q.poll();
+            if(nums[nodeVisited]!=node) return false; //check if the sequence is matching or not
+            
+            nodeVisited++;
+            for(int nextNode: adj.get(node)){
+                indegree[nextNode]--;
+                if(indegree[nextNode]==0){
+                    q.offer(nextNode);
+                }
+            }
+        }
+        
+        return nodeVisited==n;
+    }
+}
