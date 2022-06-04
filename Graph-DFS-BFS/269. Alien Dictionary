@@ -1,0 +1,71 @@
+Link: https://leetcode.com/problems/alien-dictionary/
+
+**TopoSort of the sequence for each character**
+
+class Solution {
+    public String alienOrder(String[] words) {
+        String ans="";
+        if(words==null || words.length==0) return ans;
+        //Creating a hashmap: character -> characters that come after it lexicologically.
+        HashMap<Character, Set<Character>> adj= new HashMap<>();
+        //Creting a map for the indegree of each character
+        HashMap<Character,Integer> indegree= new HashMap<>();
+        //Initailizing the indegree map
+        for(String str: words){
+            for(char ch: str.toCharArray()){
+                indegree.put(ch,0);
+            }
+        }
+        
+        //Crating the graph based on the lexological order of the words
+        for(int i=0; i<words.length-1; i++){
+            String cur= words[i];
+            String next=words[i+1];
+            //Check for the case where w1 conatins w2 eg: ["abc", "ab"]
+            if (cur.length() > next.length() && cur.startsWith(next)) {
+                return "";
+            }
+            int length= Math.min(cur.length(),next.length());
+            for(int j=0; j<length; j++){
+                char ch1=cur.charAt(j);
+                char ch2=next.charAt(j);
+                if(ch1!=ch2){
+                    Set<Character> set= new HashSet<>();
+                    if(adj.containsKey(ch1)) set=adj.get(ch1);
+                    if(!set.contains(ch2)){
+                        set.add(ch2);
+                        adj.put(ch1,set);
+                        indegree.put(ch2,indegree.get(ch2)+1);
+                    }
+                    break;
+                }
+            }
+        }
+        
+        Queue<Character> q= new LinkedList<>();
+        
+        //Add all the zero indegree nodes to the queue
+        for(char ch: indegree.keySet()){
+            if(indegree.get(ch)==0){
+                q.offer(ch);
+            }
+        }
+        
+        //DO toposort
+        while(!q.isEmpty()){
+            char c= q.poll();
+            ans+=c;
+            if(adj.containsKey(c)){
+               for(char ch2: adj.get(c)){
+                indegree.put(ch2,indegree.get(ch2)-1);
+                if(indegree.get(ch2)==0) q.add(ch2);
+            } 
+            }
+            
+        }
+        if(ans.length()!=indegree.size()) return "";
+         return ans;
+
+    }
+}
+
