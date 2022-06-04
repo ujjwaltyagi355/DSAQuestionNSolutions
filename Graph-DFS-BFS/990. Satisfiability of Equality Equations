@@ -1,0 +1,90 @@
+Link: https://leetcode.com/problems/satisfiability-of-equality-equations/
+
+**DFS**
+
+class Solution {
+    public boolean equationsPossible(String[] equations) {
+        if(equations.length==0) return true;
+        
+        HashMap<Character,HashSet<Character>> map= new HashMap<>();
+        
+        for(String eq: equations){
+            if(eq.charAt(1)=='='){
+                Character pre=eq.charAt(0);
+                Character post=eq.charAt(3);
+                
+                if(!map.containsKey(pre)) map.put(pre,new HashSet<Character>());
+                map.get(pre).add(post);
+                if(!map.containsKey(post)) map.put(post,new HashSet<Character>());
+                map.get(post).add(pre);
+            }  
+        }
+        
+        for(String eq: equations){
+            if(eq.charAt(1)=='!'){
+                Character pre=eq.charAt(0);
+                Character post=eq.charAt(3);
+                if(pre==post) return false;
+                if(!map.containsKey(pre) || !map.containsKey(post)) continue;
+                if(hasConflict(pre,post,map, new HashSet<Character>())) return false;
+            }
+        }
+        return true;
+        
+    }
+    
+    public boolean hasConflict(Character pre, Character post,HashMap<Character,HashSet<Character>> map, HashSet<Character> visited){
+        if(pre==post) return true;
+        
+        visited.add(pre);
+        
+        for(Character next: map.get(pre)){
+            if(visited.contains(next)) continue;
+            else{
+                visited.add(next);
+                if(hasConflict(next,post,map,visited)) return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+**Union Find**
+
+T(n): O(N)
+
+class Solution {
+    private int[] groups = new int[26];
+    public boolean equationsPossible(String[] equations) {
+        for(int i = 1; i < 26; i++) {
+            groups[i] = i;
+        }
+        for(String s : equations) {
+            if(s.charAt(1) == '=') {
+                union(s.charAt(0), s.charAt(3));
+            }
+        }
+        
+        for(String s : equations) {
+            if(s.charAt(1) == '!') {
+                if(find(s.charAt(0) - 'a') == find(s.charAt(3) - 'a')) return false;
+            }
+        }
+        return true;
+    }
+    
+    
+    private void union(Character pre, Character rear) {
+        groups[find(pre -'a')] = groups[find(rear - 'a')];
+    }
+    
+    
+    private int find(int x) {
+        if(x == groups[x]) {
+            return x;
+        }
+        return groups[x] = find(groups[x]);
+    }
+        
+}
