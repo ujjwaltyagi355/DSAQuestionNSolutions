@@ -1,0 +1,57 @@
+Link: https://leetcode.com/problems/trapping-rain-water-ii/
+
+**Based on the height differnce**
+
+class Solution {
+    class Node implements Comparable<Node>{
+        int row, col,height;
+        Node(int row, int col, int height){
+            this.row=row;
+            this.col=col;
+            this.height=height;
+        }
+        public int compareTo(Node o){
+            return this.height-o.height;
+        }
+    }
+    public int trapRainWater(int[][] heightMap) {
+        int m=heightMap.length;
+        int n=heightMap[0].length;
+        
+        boolean[][] visited=new boolean[m][n];
+        PriorityQueue<Node> pq= new PriorityQueue<>();
+        //Adding the boundary elements
+        for (int i = 0; i < m; i++) {
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+            pq.offer(new Node(i, 0, heightMap[i][0]));
+            pq.offer(new Node(i, n - 1, heightMap[i][n - 1]));
+        }
+
+        for (int i = 0; i < n; i++) {
+            visited[0][i] = true;
+            visited[m - 1][i] = true;
+            pq.offer(new Node(0, i, heightMap[0][i]));
+            pq.offer(new Node(m - 1, i, heightMap[m - 1][i]));
+        }
+        
+        int[][] dirs={{-1,0},{0,1},{1,0},{0,-1}};
+        int ans=0;
+        while(!pq.isEmpty()){
+            Node curr= pq.poll();
+            int x=curr.row;
+            int y=curr.col;
+            for(int[] dir: dirs){
+                int nx=x+dir[0];
+                int ny=y+dir[1];
+                
+                if(nx>=0 && ny>=0 && nx<m && ny<n && !visited[nx][ny]){
+                    ans+=Math.max(0,curr.height-heightMap[nx][ny]); //Take the height differnce
+                    visited[nx][ny]=true;
+                    pq.add(new Node(nx,ny,Math.max(curr.height,heightMap[nx][ny]))); //Now move the boundary in.
+                }
+            }
+        }
+        return ans;
+    }
+}
