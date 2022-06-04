@@ -1,0 +1,83 @@
+Link: https://leetcode.com/problems/path-with-maximum-minimum-value/
+
+**Dijsktra**
+
+T(n): O(MN*log(Math.max(M, N)))
+
+class Solution {
+    public int maximumMinimumPath(int[][] grid) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->b[2]-a[2]);
+        int n=grid.length;
+        int m=grid[0].length;
+        boolean[][] visited= new boolean[n][m];
+        
+        pq.add(new int[]{0,0,grid[0][0]});
+        
+        int[][] dirs={{-1,0},{0,1},{1,0},{0,-1}};
+        while(!pq.isEmpty()){
+            int[] curr= pq.poll();
+            int x=curr[0];
+            int y=curr[1];
+            int value=curr[2];
+            
+            if(x==n-1 && y==m-1) return value;
+            visited[x][y]=true;
+            for(int[] dir: dirs){
+                int newx=x+dir[0];
+                int newy=y+dir[1];
+                if (newx<0 || newx >= n || newy < 0 || newy >= m || visited[newx][newy]) continue;
+                pq.add(new int[]{newx,newy,Math.min(value,grid[newx][newy])});
+            }
+        }
+        return -1;
+    }
+}
+
+**Binary Search**
+
+T(n): O(V + E)
+
+class Solution {
+    public int maximumMinimumPath(int[][] grid) {
+        int n=grid.length;
+        int m=grid[0].length;
+        int low=0, high=Math.min(grid[0][0],grid[n-1][m-1]);
+        int ans=-1;
+        
+        while(low<=high){
+            int mid = low + (high - low)/2;
+            boolean[][] visited= new boolean[n][m];
+            visited[0][0]=true;
+            if(isPathWithMinValueExist(0,0,mid,grid,visited)){
+                ans=mid;
+                low=mid+1;
+            }
+            else{
+                high=mid-1;
+            }
+        }
+        return ans;
+    }
+    int[][] dirs={{-1,0},{0,1},{1,0},{0,-1}};
+    
+    boolean isPathWithMinValueExist(int row, int col, int minVal, int[][] grid, boolean[][] visited){
+        if(row==grid.length-1 && col==grid[0].length-1){
+            return true;
+        }
+        else{
+            for(int[] dir: dirs){
+                int newx=row+dir[0];
+                int newy=col+dir[1];
+                
+                if (newx >= 0 && newx < grid.length && newy >= 0 && newy < grid[0].length && !visited[newx][newy] && grid[newx][newy] >= minVal) {
+                visited[newx][newy]=true;
+                if(isPathWithMinValueExist(newx,newy,minVal,grid,visited)){
+                    return true;
+                }
+            }
+        }
+        
+    }
+        return false;
+}
+}
