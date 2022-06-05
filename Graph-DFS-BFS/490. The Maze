@@ -1,0 +1,32 @@
+Link: https://leetcode.com/problems/the-maze/
+
+**BFS**
+T(n): O(M+N)
+
+        boolean[][] visited= new boolean[m][n];
+        Queue<int[]> q= new LinkedList<>();
+        q.offer(start);
+        visited[start[0]][start[1]]=true;
+        int[][] dirs= {{-1,0},{0,1},{1,0},{0,-1}};
+        while(!q.isEmpty()){
+            int[] curr= q.poll();
+            if(curr[0]==destination[0] && curr[1]==destination[1]) return true;
+            for(int[] dir: dirs){
+                int row=curr[0];
+                int col=curr[1];
+                
+                //Travel until we hit a wall or go out of maze.
+                while (0 <= row + dir[0] && row + dir[0] < maze.length && 0 <= col + dir[1] && col + dir[1] < maze[0].length && maze[row + dir[0]][col + dir[1]] == 0) {
+                    row += dir[0];
+                    col += dir[1];
+                }
+                if(!visited[row][col]){
+                    visited[row][col]=true;
+                    q.offer(new int[]{row,col});
+                }
+            }
+        }
+        return false;
+    }
+}
+
