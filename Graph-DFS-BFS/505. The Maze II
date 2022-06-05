@@ -1,0 +1,47 @@
+Link: https://leetcode.com/problems/the-maze-ii/
+
+class Solution {
+    public int shortestDistance(int[][] maze, int[] start, int[] destination) {
+        if(maze==null || maze.length==0 || maze[0].length==0) return -1;
+        int m=maze.length;
+        int n=maze[0].length;
+        
+        //Creating a distance array to store the minimum distance possible from each point.
+        int[][] distance= new int[m][n];
+        for(int[] arr: distance){
+            Arrays.fill(arr,Integer.MAX_VALUE);
+        }
+        
+        PriorityQueue<int[]> pq= new PriorityQueue<>((a,b)->a[2]-b[2]);
+        
+        //Add start to the priority queue and mark it's distance as zero.
+        pq.offer(new int[]{start[0],start[1],0});
+        distance[start[0]][start[1]]=0;
+        
+        int[][] dirs={{-1,0},{0,1},{1,0},{0,-1}};
+        while(!pq.isEmpty()){
+            int[] curr= pq.poll();
+            
+            if(curr[0]==destination[0] && curr[1]==destination[1]) return curr[2];
+            for(int[] dir: dirs){
+                int x=curr[0];
+                int y=curr[1];
+                int dis=curr[2];
+                //Checking if the ball is inside the court and we are on a free space.
+                while(x+dir[0]>=0 && y+dir[1]>=0 && x+dir[0]<m && y+dir[1]<n && maze[x+dir[0]][y+dir[1]]==0){
+                    x+=dir[0];
+                    y+=dir[1];
+                    dis++;
+                }
+                //Updating the distance when we find smaller
+                if(distance[x][y]>dis){
+                    distance[x][y]=dis;
+                    pq.offer(new int[]{x,y,dis});
+                }
+            }
+            
+        }
+        return -1;
+        
+    }
+}
