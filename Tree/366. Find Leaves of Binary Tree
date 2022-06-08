@@ -1,0 +1,44 @@
+Link: https://leetcode.com/problems/find-leaves-of-binary-tree/
+
+Steps:
+  1. We get the levels at which each node resides and then we add them according to the level they are at.
+ 
+T(n): O(N)
+S(n): O(N)
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> findLeaves(TreeNode root) {
+        List<List<Integer>> ans= new ArrayList<>();
+        if(root==null) return ans;
+        //to calculated the level of the nodes as well as add them to the answer we use this function.
+        level(root,ans);
+        return ans;
+    }
+    public Integer level(TreeNode root, List<List<Integer>> ans){
+        if(root==null) return -1; //When we have gone beyond the leaf nodes as well
+        //calculate the current level here
+        int level=Math.max(level(root.left,ans),level(root.right,ans))+1; //Here plus one is to show the uplifting we did while coming back from leaf nodes.
+        //adding the level to the ans if it wasn't already there
+        if(ans.size()<=level){
+            ans.add(new ArrayList<>());
+        }
+        //Now dd the element to the respective level
+        ans.get(level).add(root.val);
+        return level;
+    }
+}
