@@ -1,0 +1,34 @@
+Link: https://leetcode.com/problems/remove-all-ones-with-row-and-column-flips/
+
+T(n): O(N*M)
+
+//Steps:
+    //1. We check the first row, if it contains any 1's we flip the entire column
+    //2. After the step 1, if any of the further rows are not the same, i.e. all the values in the row are not either 1 or 0, then we would need to flip that column and that would disturb the first row as well. Hance, if any such row exist then we return false.
+class Solution {
+    public boolean removeOnes(int[][] grid) {
+        if(grid==null) return true;
+        int m=grid.length;
+        int n=grid[0].length;
+        if(m==0 || n==0) return true;
+        
+        //Checking the first row, if any 1's exist we flip the entire column
+        for(int c=0; c<n; c++){
+            if(grid[0][c]==1){
+                //flip the entire column
+                for(int r=0; r<m; r++){
+                    grid[r][c]=grid[r][c]==0?1:0;
+                }
+            }
+        }
+        
+        //Now check if any discrepancy in the values exists for other rows
+        
+        for(int r=1; r<m; r++){
+            for(int c=1; c<n; c++){
+                if(grid[r][c]!=grid[r][c-1]) return false;
+            }
+        }
+        return true;
+    }
+}
