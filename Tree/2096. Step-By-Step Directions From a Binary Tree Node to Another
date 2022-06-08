@@ -1,0 +1,124 @@
+Link: https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/
+
+Method 1:(2 Traversals)
+
+Steps:
+  1. We get the path of each node from the root.
+  2. This path will be in the reverse order as we are loooking for a path from the node to the root.
+  3. Next we Compare both the paths and delete the common substings as we are looking for the LCA here.
+  4. Now we just replace all the characters of start path to "U" and then reverse and add the destination path to get the result.
+T(n): O(n)
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        StringBuilder s= new StringBuilder();
+        StringBuilder d= new StringBuilder();
+        
+        findPath(startValue, root, s); //Path from start to root
+        findPath(destValue, root, d); //Path from root to start.
+        //We will calculate the number of same characters in the both the strings becuase the characters reuired are till the LCA only, so all the characters about the lca uptil the root are not required.
+        int i=0;
+        int minindex=Math.min(s.length(),d.length());
+        //we will traverse the strings from the back here
+        while(i<minindex && s.charAt(s.length()-i-1)==d.charAt(d.length()-i-1)){
+            i++;
+        }
+        
+        //Now for the answer we need to replace all the elements of s with "U" because of the upper movement and for d we will take the uncommon substring from it's reversed version.
+        return "U".repeat(s.length()-i) + d.reverse().toString().substring(i);
+    }
+    //Due to recursion we get the path in reverse manner
+    public boolean findPath(int value, TreeNode root, StringBuilder sb){
+        if(root.val==value) return true;
+        if(root.left != null && findPath(value, root.left, sb)) { //going left
+            sb.append("L");
+        }
+        else if(root.right != null && findPath(value, root.right, sb)) { //going right
+            sb.append("R");
+        }
+        return sb.length()>0;
+    }
+}
+
+
+Method-02 (Single Traversal)
+
+Steps:
+  1. We take two global variable and with the help of our method we just wait to get either of the node.
+  2. When ever we get the node we just assign the path.
+  3. We backtrach when we reach the end.
+ 
+T(n): O(n)
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    String a="";
+    String b="";
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        
+        findPath(startValue, destValue, root, new StringBuilder()); //Finding the path from each node here.
+        //We will calculate the number of same characters in the both the strings becuase the characters reuired are till the LCA only, so all the characters about the lca uptil the root are not required.
+        int i=0;
+        int minindex=Math.min(a.length(),b.length());
+        //we will traverse the strings from the back here
+        while(i<minindex && a.charAt(i)==b.charAt(i)){
+            i++;
+        }
+        
+        //Now for the answer we need to replace all the elements of s with "U" because of the upper movement and for d we will take the uncommon substring from it's reversed version.
+        return "U".repeat(a.length()-i)+ b.substring(i);
+    }
+    //Due to recursion we get the path in reverse manner
+    public void findPath(int startValue, int endValue, TreeNode root, StringBuilder sb){
+        if(root==null) return;
+        //We we were able to reach startValue then we were able to build the path to it
+        if(root.val==startValue){
+            a=sb.toString();
+        }
+        //We are able to reach endValue then we were able to build a path to it.
+        if(root.val==endValue){
+            b=sb.toString();
+        }
+        
+        if(root.left != null) {
+            sb.append("L");
+            findPath(startValue, endValue, root.left, sb);
+            sb.deleteCharAt(sb.length()-1); //backtracking by removing the last character of the recurence call
+        }
+        if(root.right != null) {
+            sb.append("R");
+            findPath(startValue, endValue,root.right, sb);
+            sb.deleteCharAt(sb.length()-1); //backtracking by removing the last character of the recurence call
+        }
+        return;
+    }
+}
