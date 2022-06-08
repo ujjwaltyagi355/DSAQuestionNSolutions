@@ -1,0 +1,60 @@
+Link: https://leetcode.com/problems/the-maze-iii/
+
+**Dijkstra's Algorithm**
+
+class Solution {
+    class Point implements Comparable<Point>{
+        int x;
+        int y;
+        int len;
+        String path;
+        
+        public Point(int x, int y, int len, String path){
+            this.x=x;
+            this.y=y;
+            this.len=len;
+            this.path=path;
+        }
+        
+        public int compareTo(Point p2){
+            return this.len==p2.len?this.path.compareTo(p2.path):this.len-p2.len;
+        }
+        
+        
+    }
+    public String findShortestWay(int[][] maze, int[] ball, int[] hole) {
+        if(maze==null || maze.length==0 || maze[0].length==0){
+            return "impossible";
+        }
+        int m=maze.length;
+        int n=maze[0].length;
+        int[][] dis= new int[m][n];
+        boolean[][] visited= new boolean[m][n];
+        PriorityQueue<Point> pq= new PriorityQueue<>();
+        pq.offer(new Point(ball[0],ball[1],0,""));
+        char[] dstr = {'d', 'l', 'r', 'u'};
+        int[][] dirs = {{1,0},{0,-1},{0,1},{-1,0}};
+        while(!pq.isEmpty()){
+            Point curr= pq.poll();
+            if(curr.x==hole[0] && curr.y==hole[1]) return curr.path;
+            visited[curr.x][curr.y]=true;
+            for(int i=0;i<dirs.length; i++){
+                int x=curr.x;
+                int y=curr.y;
+                int len=curr.len;
+                String path=curr.path;
+                while((x+dirs[i][0]>=0) && (y+dirs[i][1]>=0) && (x+dirs[i][0]<m) && (y+dirs[i][1]<n) && (maze[x+dirs[i][0]][y+dirs[i][1]])!=1){
+                    x+=dirs[i][0];
+                    y+=dirs[i][1];
+                    len++;
+                    if(x==hole[0] && y==hole[1]) break;
+                }
+                if(!visited[x][y]){
+                    pq.offer(new Point(x,y,len,path+dstr[i]));
+                }
+            }
+        }
+        return "impossible";
+        
+    }
+}
