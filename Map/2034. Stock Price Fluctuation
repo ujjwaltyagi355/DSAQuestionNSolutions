@@ -1,0 +1,65 @@
+Link: https://leetcode.com/problems/stock-price-fluctuation/
+
+** See the use of TreeMap here**
+Map=> To store the timestamp with price.
+TreeMap=> to get the max and min
+
+T(n): O(logn) for each function
+S(n): O(n)
+
+class StockPrice {
+        HashMap<Integer,Integer> map; //map contains (timeStamps, price)
+        TreeMap<Integer,Integer> tm; //treemap contains (price,frequency)
+        int current; //Tracks the latest timestamp
+    public StockPrice() {
+        map=new HashMap<>();
+        tm=new TreeMap<>();
+        current=0;
+    }
+    
+    public void update(int timestamp, int price) {
+        current=Math.max(current,timestamp); //Current holds the latest timestamp
+        //If the hashmap contains the timestamp then the value needs to get updated
+        if(map.containsKey(timestamp)){
+            //get the old price from the map
+            int oldprice=map.get(timestamp);
+            //Now we update the same in the tree map, where we will decrease the value of old price
+            if(tm.containsKey(oldprice)){
+                //Reduce the frequency of the oldprice in the treemap
+                //If the frequency is already 1, then we remove the element
+                if(tm.get(oldprice)==1){
+                    tm.remove(oldprice);
+                }
+                else{
+                    tm.put(oldprice,tm.get(oldprice)-1);
+                }
+            }
+        }
+        //Updating the hashmap
+        map.put(timestamp,price);
+        //Update the frequency in the treemap
+        tm.put(price, tm.getOrDefault(price,0)+1);
+    }
+    
+    public int current() {
+        return map.get(current);
+    }
+    
+    public int maximum() {
+        return tm.lastKey();
+        
+    }
+    
+    public int minimum() {
+        return tm.firstKey();
+    }
+}
+
+/**
+ * Your StockPrice object will be instantiated and called as such:
+ * StockPrice obj = new StockPrice();
+ * obj.update(timestamp,price);
+ * int param_2 = obj.current();
+ * int param_3 = obj.maximum();
+ * int param_4 = obj.minimum();
+ */
